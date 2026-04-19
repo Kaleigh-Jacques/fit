@@ -1,0 +1,983 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>28 Days — Calisthenics Program</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=JetBrains+Mono:wght@400;700&family=Fraunces:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f5f5f4;
+    --fg: #1c1917;
+    --muted: #78716c;
+    --muted-light: #a8a29e;
+    --border: #d6d3d1;
+    --white: #ffffff;
+    --strength: #ff4d00;
+    --conditioning: #e63946;
+    --recovery: #4a7c59;
+    --yt-red: #ff0000;
+  }
+
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--fg);
+    font-family: 'Courier New', monospace;
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .display { font-family: 'Archivo Black', sans-serif; letter-spacing: -0.02em; }
+  .serif { font-family: 'Fraunces', serif; }
+  .mono { font-family: 'JetBrains Mono', monospace; }
+
+  .grain {
+    background-image: radial-gradient(rgba(0,0,0,0.08) 1px, transparent 1px);
+    background-size: 3px 3px;
+  }
+
+  /* Header */
+  .header {
+    border-bottom: 4px solid var(--fg);
+    background: var(--bg);
+  }
+  .header-inner {
+    max-width: 1024px;
+    margin: 0 auto;
+    padding: 2rem 1.5rem;
+  }
+  .header-top {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+  .header-label {
+    font-size: 0.75rem;
+    letter-spacing: 0.1em;
+    color: var(--muted);
+    margin-bottom: 0.25rem;
+  }
+  .header-title {
+    font-size: clamp(3rem, 10vw, 4.5rem);
+    line-height: 1;
+    margin: 0;
+  }
+  .header-subtitle {
+    font-size: clamp(1.25rem, 3vw, 1.5rem);
+    color: #44403c;
+    margin-top: 0.25rem;
+  }
+  .header-count { text-align: right; }
+  .header-count-num {
+    font-size: clamp(2.5rem, 7vw, 3rem);
+    line-height: 1;
+    color: var(--strength);
+  }
+  .header-count-num span { color: var(--muted-light); }
+  .progress-bar {
+    margin-top: 1.5rem;
+    height: 0.5rem;
+    background: var(--border);
+    position: relative;
+    overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #ff4d00, #e63946);
+    transition: width 0.5s ease;
+    width: 0%;
+  }
+
+  /* Main */
+  main { max-width: 1024px; margin: 0 auto; padding: 2rem 1.5rem; }
+  .section-label {
+    font-size: 0.75rem;
+    letter-spacing: 0.1em;
+    color: var(--muted);
+    margin-bottom: 0.75rem;
+  }
+
+  /* Day grid */
+  .day-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 0.375rem;
+    margin-bottom: 0.75rem;
+  }
+  .day-btn {
+    aspect-ratio: 1 / 1;
+    border: 2px solid var(--border);
+    background: var(--white);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-family: 'Archivo Black', sans-serif;
+    font-size: 1rem;
+    color: var(--fg);
+    position: relative;
+    transition: border-color 0.15s;
+    padding: 0;
+  }
+  .day-btn:hover { border-color: var(--fg); }
+  .day-btn.active {
+    border-color: var(--fg);
+    background: var(--fg);
+    color: var(--bg);
+  }
+  .day-btn-dot {
+    width: 0.375rem;
+    height: 0.375rem;
+    border-radius: 999px;
+    margin-top: 0.25rem;
+  }
+  .day-btn-check {
+    position: absolute;
+    top: 2px;
+    right: 2px;
+    font-size: 0.625rem;
+    font-weight: bold;
+  }
+
+  .legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    font-size: 0.75rem;
+    color: #57534e;
+  }
+  .legend-item { display: flex; align-items: center; gap: 0.375rem; }
+  .legend-dot {
+    width: 0.5rem;
+    height: 0.5rem;
+    border-radius: 999px;
+  }
+  .hint {
+    margin-top: 0.75rem;
+    font-size: 0.75rem;
+    color: var(--muted);
+    display: flex;
+    align-items: center;
+    gap: 0.375rem;
+  }
+
+  /* Day detail card */
+  .day-card {
+    background: var(--white);
+    border: 4px solid var(--fg);
+    position: relative;
+    margin-top: 2rem;
+    animation: slideIn 0.4s ease-out;
+  }
+  .day-card-tag {
+    position: absolute;
+    top: -0.75rem;
+    left: 2rem;
+    background: var(--fg);
+    color: var(--bg);
+    padding: 0.25rem 0.75rem;
+    font-size: 0.75rem;
+    letter-spacing: 0.1em;
+    font-family: 'JetBrains Mono', monospace;
+  }
+  .day-card-body { padding: 1.5rem; }
+  @media (min-width: 768px) { .day-card-body { padding: 2.5rem; } }
+
+  .day-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+    flex-wrap: wrap;
+    margin-bottom: 1.5rem;
+  }
+  .day-type-label {
+    font-size: 0.75rem;
+    letter-spacing: 0.1em;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+  }
+  .day-number {
+    font-size: 0.75rem;
+    color: var(--muted);
+    margin-bottom: 0.25rem;
+  }
+  .day-title {
+    font-size: clamp(2rem, 5vw, 3rem);
+    line-height: 1;
+    margin: 0;
+  }
+
+  .complete-btn {
+    padding: 0.75rem 1.25rem;
+    font-size: 0.75rem;
+    letter-spacing: 0.1em;
+    border: 2px solid var(--fg);
+    background: var(--white);
+    color: var(--fg);
+    cursor: pointer;
+    font-family: 'JetBrains Mono', monospace;
+    transition: all 0.15s;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  .complete-btn:hover { background: var(--fg); color: var(--bg); }
+  .complete-btn.done { background: var(--fg); color: var(--bg); }
+
+  /* Blocks */
+  .block {
+    border-left: 2px solid var(--fg);
+    padding-left: 1.25rem;
+    margin-bottom: 1.5rem;
+  }
+  .block:last-child { margin-bottom: 0; }
+  .block-header {
+    display: flex;
+    align-items: baseline;
+    gap: 0.75rem;
+    margin-bottom: 0.75rem;
+  }
+  .block-num {
+    font-family: 'Archivo Black', sans-serif;
+    font-size: 1.5rem;
+    letter-spacing: -0.02em;
+  }
+  .block-label {
+    font-family: 'Fraunces', serif;
+    font-size: 1.25rem;
+    font-weight: bold;
+    margin: 0;
+  }
+  .block-list { list-style: none; padding: 0; margin: 0; }
+  .block-list li {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.875rem;
+    color: #292524;
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 0.375rem;
+    line-height: 1.5;
+  }
+  .block-list li::before { content: "→"; color: var(--muted-light); }
+  .exercise-link {
+    text-decoration: underline;
+    text-decoration-style: dotted;
+    text-underline-offset: 2px;
+    text-decoration-thickness: 2px;
+    cursor: pointer;
+    background: none;
+    border: none;
+    padding: 0;
+    font-family: inherit;
+    font-size: inherit;
+    color: inherit;
+    transition: background 0.1s, color 0.1s;
+  }
+  .exercise-link:hover { background: var(--fg); color: var(--bg); }
+
+  /* Nav */
+  .nav { display: flex; justify-content: space-between; margin-top: 1.5rem; }
+  .nav-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.75rem;
+    letter-spacing: 0.1em;
+    padding: 0.75rem 1rem;
+    border: 2px solid var(--fg);
+    background: var(--white);
+    color: var(--fg);
+    cursor: pointer;
+    font-family: 'JetBrains Mono', monospace;
+    transition: all 0.15s;
+  }
+  .nav-btn:hover:not(:disabled) { background: var(--fg); color: var(--bg); }
+  .nav-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+
+  /* Notes */
+  .notes {
+    margin-top: 2.5rem;
+    border-top: 2px solid var(--fg);
+    padding-top: 1.5rem;
+  }
+  .notes-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1rem;
+    font-family: 'Fraunces', serif;
+    color: #292524;
+  }
+  @media (min-width: 768px) { .notes-grid { grid-template-columns: repeat(3, 1fr); } }
+  .note-title {
+    font-family: 'Archivo Black', sans-serif;
+    font-size: 0.875rem;
+    margin-bottom: 0.25rem;
+  }
+  .note-body {
+    font-size: 0.875rem;
+    line-height: 1.5;
+    margin: 0;
+  }
+
+  .reset-btn {
+    margin-top: 2rem;
+    font-size: 0.75rem;
+    letter-spacing: 0.1em;
+    color: var(--muted);
+    cursor: pointer;
+    font-family: 'JetBrains Mono', monospace;
+    background: none;
+    border: none;
+    padding: 0;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+  }
+  .reset-btn:hover { color: var(--fg); }
+
+  .footer {
+    margin-top: 3rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--border);
+    font-size: 0.75rem;
+    color: var(--muted);
+    text-align: center;
+  }
+
+  /* Modal */
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(28, 25, 23, 0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+    z-index: 50;
+    animation: fadeIn 0.2s ease-out;
+  }
+  .modal-overlay.hidden { display: none; }
+  .modal {
+    background: var(--bg);
+    border: 4px solid var(--fg);
+    max-width: 32rem;
+    width: 100%;
+    position: relative;
+    animation: scaleIn 0.25s ease-out;
+    max-height: 90vh;
+    overflow-y: auto;
+  }
+  .modal-close {
+    position: absolute;
+    top: 0.75rem;
+    right: 0.75rem;
+    width: 2.25rem;
+    height: 2.25rem;
+    background: var(--fg);
+    color: var(--bg);
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+    z-index: 10;
+    transition: background 0.15s;
+    font-family: inherit;
+  }
+  .modal-close:hover { background: #57534e; }
+  .modal-body { padding: 1.5rem; }
+  @media (min-width: 768px) { .modal-body { padding: 2rem; } }
+  .modal-label {
+    font-size: 0.75rem;
+    letter-spacing: 0.1em;
+    color: var(--muted);
+    margin-bottom: 0.25rem;
+  }
+  .modal-title {
+    font-family: 'Archivo Black', sans-serif;
+    font-size: 1.875rem;
+    line-height: 1;
+    margin: 0 0 1.25rem 0;
+  }
+  .modal-cue {
+    font-family: 'Fraunces', serif;
+    font-size: 1rem;
+    line-height: 1.6;
+    color: #292524;
+    margin-bottom: 1.25rem;
+  }
+
+  /* YouTube button */
+  .yt-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.625rem;
+    width: 100%;
+    padding: 0.875rem 1rem;
+    background: var(--fg);
+    color: var(--bg);
+    border: 2px solid var(--fg);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.8125rem;
+    letter-spacing: 0.1em;
+    cursor: pointer;
+    text-decoration: none;
+    transition: all 0.15s;
+  }
+  .yt-btn:hover {
+    background: var(--yt-red);
+    border-color: var(--yt-red);
+  }
+  .yt-btn-icon {
+    width: 1.25rem;
+    height: 0.875rem;
+    background: var(--yt-red);
+    border-radius: 3px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition: background 0.15s;
+  }
+  .yt-btn:hover .yt-btn-icon { background: var(--bg); }
+  .yt-btn-icon::before {
+    content: "";
+    width: 0;
+    height: 0;
+    border-left: 6px solid var(--bg);
+    border-top: 4px solid transparent;
+    border-bottom: 4px solid transparent;
+    margin-left: 2px;
+    transition: border-left-color 0.15s;
+  }
+  .yt-btn:hover .yt-btn-icon::before { border-left-color: var(--yt-red); }
+
+  .yt-btn-hint {
+    display: block;
+    font-size: 0.6875rem;
+    color: var(--muted);
+    text-align: center;
+    margin-top: 0.625rem;
+    font-family: 'JetBrains Mono', monospace;
+    letter-spacing: 0.05em;
+  }
+
+  /* Animations */
+  @keyframes slideIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+  @keyframes fadeIn  { from { opacity: 0; } to { opacity: 1; } }
+  @keyframes scaleIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
+</style>
+</head>
+<body>
+
+<header class="header grain">
+  <div class="header-inner">
+    <div class="header-top">
+      <div>
+        <div class="mono header-label">PROGRAM · 001 / INTERMEDIATE</div>
+        <h1 class="display header-title">28 DAYS</h1>
+        <div class="serif header-subtitle" style="font-style: italic;">of floor-only fire.</div>
+      </div>
+      <div class="header-count">
+        <div class="display header-count-num"><span id="done-count">0</span><span>/28</span></div>
+        <div class="mono header-label" style="margin-top: 0.25rem;">COMPLETE</div>
+      </div>
+    </div>
+    <div class="progress-bar"><div id="progress-fill" class="progress-fill"></div></div>
+  </div>
+</header>
+
+<main>
+  <div class="mono section-label">SELECT DAY</div>
+  <div id="day-grid" class="day-grid"></div>
+
+  <div class="legend mono">
+    <div class="legend-item"><div class="legend-dot" style="background: #ff4d00;"></div> STRENGTH</div>
+    <div class="legend-item"><div class="legend-dot" style="background: #e63946;"></div> CONDITIONING</div>
+    <div class="legend-item"><div class="legend-dot" style="background: #4a7c59;"></div> RECOVERY</div>
+  </div>
+  <div class="mono hint">ⓘ Tap any underlined exercise for the form cue + Calimove demo.</div>
+
+  <div id="day-card" class="day-card">
+    <div class="day-card-tag mono" id="week-tag">WEEK 1</div>
+    <div class="day-card-body">
+      <div class="day-header">
+        <div>
+          <div class="day-type-label mono" id="day-type-label"></div>
+          <div class="day-number mono" id="day-number"></div>
+          <h2 class="display day-title" id="day-title"></h2>
+        </div>
+        <button class="complete-btn mono" id="complete-btn"></button>
+      </div>
+      <div id="blocks-container"></div>
+    </div>
+  </div>
+
+  <div class="nav">
+    <button class="nav-btn" id="prev-btn">‹ PREV</button>
+    <button class="nav-btn" id="next-btn">NEXT ›</button>
+  </div>
+
+  <div class="notes">
+    <div class="mono section-label">OPERATING NOTES</div>
+    <div class="notes-grid">
+      <div>
+        <div class="note-title">FUEL</div>
+        <p class="note-body">Slight calorie deficit (250–500/day). Protein 0.8–1g per lb bodyweight. Don't under-eat on strength days.</p>
+      </div>
+      <div>
+        <div class="note-title">SLEEP</div>
+        <p class="note-body">7–9 hours. Recovery is where the body actually changes. Non-negotiable on strength days.</p>
+      </div>
+      <div>
+        <div class="note-title">PROGRESS</div>
+        <p class="note-body">Log reps for key movements. Week 4 benchmark reveals the delta. Form over ego, always.</p>
+      </div>
+    </div>
+  </div>
+
+  <button class="reset-btn" id="reset-btn" style="display: none;">✕ RESET PROGRESS</button>
+
+  <footer class="footer mono">NO EQUIPMENT · NO EXCUSES · JUST FLOOR</footer>
+</main>
+
+<div id="modal" class="modal-overlay hidden">
+  <div class="modal" id="modal-content">
+    <button class="modal-close" id="modal-close">✕</button>
+    <div class="modal-body">
+      <div class="mono modal-label">EXERCISE</div>
+      <h3 class="modal-title" id="modal-title"></h3>
+      <div class="serif modal-cue" id="modal-cue"></div>
+      <a class="yt-btn" id="yt-btn" target="_blank" rel="noopener noreferrer">
+        <span class="yt-btn-icon"></span>
+        <span>WATCH ON CALIMOVE</span>
+      </a>
+      <div class="yt-btn-hint">Opens YouTube search, Calimove videos first</div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ═════════════════════════════════════════════════════════════
+// EXERCISE LIBRARY
+// Video demos scoped to the Calisthenic Movement (@calimove) YouTube
+// channel. Queries are kept short (just the exercise name) because
+// the channel scope already provides the calisthenics/intermediate context.
+// ═════════════════════════════════════════════════════════════
+
+const EXERCISES = {
+  'Push-ups':                { query: 'push up',                         cue: "Hands shoulder-width, body in straight line. Lower chest to floor, elbows ~45° from body. Press up without letting hips sag." },
+  'Bodyweight squats':       { query: 'squat',                           cue: "Feet shoulder-width. Sit back and down, knees tracking over toes, chest up. Full depth if mobility allows." },
+  'Pike push-ups':           { query: 'pike push up',                    cue: "Hips piked high, body forms an inverted V. Lower the top of your head toward the floor between your hands. Targets shoulders." },
+  'Reverse lunges':          { query: 'reverse lunge',                   cue: "Step one leg back, drop rear knee toward floor. Front knee at 90°. Push through front heel to return." },
+  'Hollow hold':             { query: 'hollow body hold',                cue: "Lie on back, press lower back flat into floor. Lift legs, shoulders, and arms off ground. Body forms a banana shape. Brace hard." },
+  'Burpees':                 { query: 'burpee',                          cue: "Squat down, hands to floor, jump feet back to plank, do a push-up, jump feet forward, explode up with a jump." },
+  'High knees':              { query: 'high knees',                      cue: "Run in place driving knees up to hip height. Quick cadence, stay on balls of feet, pump arms." },
+  'Mountain climbers':       { query: 'mountain climber',                cue: "From plank position, drive knees to chest alternately as fast as possible. Keep hips low, core tight." },
+  'Jump squats':             { query: 'jump squat',                      cue: "Squat down, then explode upward into a jump. Land softly with bent knees, immediately descend into next rep." },
+  'Plank':                   { query: 'plank',                           cue: "Forearms down, body in straight line from head to heels. Squeeze glutes and brace core. Don't let hips sag." },
+  'Diamond push-ups':        { query: 'diamond push up',                 cue: "Hands together forming a diamond shape under chest. Lower down keeping elbows close to body. Hits triceps hard." },
+  'Leg raises':              { query: 'leg raise',                       cue: "Lie on back, hands under lower back for support. Lift straight legs to 90°, lower slowly without touching floor." },
+  'Plank up-downs':          { query: 'plank up down',                   cue: "Start in forearm plank. Push up to high plank one arm at a time, then lower back to forearms. Alternate lead arm." },
+  'Bulgarian split squats':  { query: 'bulgarian split squat',           cue: "Rear foot elevated on couch/chair behind you. Drop straight down, front knee over ankle. Drive up through front foot." },
+  'Single-leg glute bridge': { query: 'single leg glute bridge',         cue: "Lie on back, one foot planted, other leg extended. Drive hips up squeezing glute of planted leg. Keep hips level." },
+  'Calf raises':             { query: 'calf raise',                      cue: "Stand tall, rise onto balls of feet as high as possible. Pause at top, lower slowly. Do barefoot for more range." },
+  'Wall sit':                { query: 'wall sit',                        cue: "Back flat against wall, knees at 90°, thighs parallel to floor. Hold. Don't rest hands on thighs." },
+  'Decline push-ups':        { query: 'decline push up',                 cue: "Feet elevated on couch/chair, hands on floor. Shifts load to upper chest and shoulders. Keep body straight." },
+  'Tricep dips':             { query: 'tricep dip',                      cue: "Hands on floor or edge of couch behind you, legs extended. Lower by bending elbows straight back, press up." },
+  'Cossack squats':          { query: 'cossack squat',                   cue: "Wide stance. Shift weight to one side, squatting deeply on that leg with other leg straight. Alternate sides." },
+  'Single-leg RDL':          { query: 'single leg deadlift',             cue: "Balance on one leg. Hinge at hip, reaching hands toward floor as back leg lifts behind you. Body forms a T." },
+  'Pistol squats':           { query: 'pistol squat',                    cue: "Single-leg squat with other leg extended forward. Sit back, keep extended leg straight. Use a doorframe for balance if needed." },
+  'Nordic curl negatives':   { query: 'nordic curl',                     cue: "Kneel with ankles anchored (under couch). Slowly lower body forward using only hamstrings. Catch with hands. Only the lowering phase." },
+  'Archer push-ups':         { query: 'archer push up',                  cue: "Wide hand placement. Lower toward one hand while other arm stays straight. Alternate sides. Unilateral strength." },
+  'L-sit tuck hold':         { query: 'l sit',                           cue: "Sit, hands on floor beside hips. Press down to lift body, knees tucked to chest. Hold. Progression toward full L-sit." },
+  'Skaters':                 { query: 'skater jump',                     cue: "Jump laterally from foot to foot, landing on single leg each time. Other leg swings behind. Power and lateral stability." },
+  'Jump lunges':             { query: 'jump lunge',                      cue: "Lunge position. Explode up and switch legs mid-air, landing in opposite lunge. Continuous rhythm." },
+  'Push-up to shoulder tap': { query: 'shoulder tap push up',            cue: "Do a push-up, then at the top tap opposite shoulder with hand. Alternate hands each rep. Anti-rotation core work." },
+  'Push-up to T':            { query: 'push up side plank',              cue: "Do a push-up, then rotate into a side plank reaching one arm to ceiling. Alternate sides. Shoulders and obliques." },
+  'Superman hold':           { query: 'superman',                        cue: "Lie face down, arms extended forward. Lift arms, chest, and legs off floor simultaneously. Hold. Squeeze glutes and back." },
+  'Reverse snow angels':     { query: 'back extension',                  cue: "Lie face down, lift chest slightly. Sweep arms from sides overhead and back, like making a snow angel. Upper back activation." },
+  'Towel rows':              { query: 'inverted row',                    cue: "Loop two towels over sturdy doorframe (close door on towels). Lean back holding ends, pull chest to hands. Adjust angle for difficulty." },
+  'V-ups':                   { query: 'v up',                            cue: "Lie flat. Simultaneously lift legs and torso to meet, reaching hands toward feet. Lower with control. Body forms V." },
+  'Russian twists':          { query: 'russian twist',                   cue: "Sit with knees bent, lean back slightly. Rotate torso side to side, tapping floor beside hips. Feet up for more challenge." },
+  'Bicycle crunches':        { query: 'bicycle crunch',                  cue: "Lie on back, hands behind head. Bring opposite elbow to opposite knee while extending other leg. Alternate in bicycling motion." },
+  'Dead bug':                { query: 'dead bug',                        cue: "Lie on back, arms and knees up at 90°. Lower opposite arm and leg toward floor without arching back. Alternate sides." },
+  'Bird dog':                { query: 'bird dog',                        cue: "On hands and knees. Extend opposite arm and leg straight out. Hold briefly without rotating hips. Alternate sides." },
+  'Side plank':              { query: 'side plank',                      cue: "Lie on side, forearm down, body in straight line. Lift hips so body forms a line. Stack feet or stagger for balance." },
+  'Hollow rocks':            { query: 'hollow rock',                     cue: "Start in hollow hold position. Rock back and forth as a single rigid unit. Don't lose the banana shape." },
+  'Squat pulses':            { query: 'squat',                           cue: "Drop into low squat position. Pulse up and down through small range at the bottom. Burns out the quads." },
+  'Inchworm to push-up':     { query: 'inchworm',                        cue: "From standing, hinge and walk hands out to plank. Do a push-up. Walk hands back to feet, stand up. One rep." },
+  'Inchworms':               { query: 'inchworm',                        cue: "From standing, hinge and walk hands forward into plank. Walk hands back to feet, stand up. No push-up needed." },
+  'Scapular push-ups':       { query: 'scapular push up',                cue: "Hold plank with arms straight. Without bending elbows, pinch shoulder blades together, then push them apart. Small range." },
+};
+
+// ═════════════════════════════════════════════════════════════
+// 28-DAY PROGRAM
+// ═════════════════════════════════════════════════════════════
+
+const PROGRAM = [
+  { day: 1, week: 1, title: 'Full Body Ignition', type: 'strength', blocks: [
+    { label: 'Warm-up', items: ['Jumping jacks — 2 min', 'Arm circles & leg swings — 1 min', 'Inchworm to push-up — 8 reps'] },
+    { label: 'Main (3 rounds, 60s rest)', items: ['Push-ups — 12', 'Bodyweight squats — 20', 'Pike push-ups — 8', 'Reverse lunges — 10/side', 'Hollow hold — 30s'] },
+    { label: 'Finisher', items: ['Burpees — 5 rounds of 8, 30s rest'] },
+  ]},
+  { day: 2, week: 1, title: 'Conditioning Burn', type: 'conditioning', blocks: [
+    { label: 'Warm-up', items: ['High knees — 45s', 'Bodyweight squats — 15', "World's greatest stretch — 5/side"] },
+    { label: 'EMOM 20 min', items: ['Min 1: Mountain climbers — 30', 'Min 2: Jump squats — 15', 'Min 3: Push-ups — 12', 'Min 4: Plank — 45s', 'Repeat ×4'] },
+    { label: 'Cool-down', items: ['Walk or slow breathing — 3 min', 'Pigeon stretch — 1 min/side'] },
+  ]},
+  { day: 3, week: 1, title: 'Active Recovery', type: 'rest', blocks: [
+    { label: 'Mobility flow', items: ['Cat-cow — 10 reps', 'Down dog to cobra — 10 reps', 'Hip openers — 2 min', 'Thoracic rotations — 10/side', 'Couch stretch — 1 min/side'] },
+    { label: 'Optional', items: ['20–30 min easy walk'] },
+  ]},
+  { day: 4, week: 1, title: 'Push & Core', type: 'strength', blocks: [
+    { label: 'Warm-up', items: ['Scapular push-ups — 10', 'Arm circles — 30s each direction', "Cobra to child's pose — 8 reps"] },
+    { label: 'Main (4 rounds)', items: ['Push-ups — AMRAP', 'Diamond push-ups — 8', 'Pike push-ups — 8', 'Hollow hold — 40s', 'Leg raises — 12'] },
+    { label: 'Finisher', items: ['Plank up-downs — 3 × 20'] },
+  ]},
+  { day: 5, week: 1, title: 'Tabata Torch', type: 'conditioning', blocks: [
+    { label: 'Warm-up', items: ['Jog in place — 2 min', 'Dynamic lunges — 10/side'] },
+    { label: 'Tabata ×4 (20s on / 10s off, 8 rounds each, 1 min between)', items: ['Block 1: Jump squats', 'Block 2: Push-ups', 'Block 3: Mountain climbers', 'Block 4: Burpees'] },
+    { label: 'Cool-down', items: ['Walk — 3 min', 'Full body stretch — 5 min'] },
+  ]},
+  { day: 6, week: 1, title: 'Legs & Posterior', type: 'strength', blocks: [
+    { label: 'Warm-up', items: ['Bodyweight squats — 20', 'Single-leg glute bridge — 15/side', 'Leg swings — 10/side'] },
+    { label: 'Main (4 rounds)', items: ['Bulgarian split squats — 10/side', 'Single-leg glute bridge — 12/side', 'Reverse lunges — 12/side', 'Calf raises — 25', 'Wall sit — 45s'] },
+    { label: 'Finisher', items: ['Squat pulses — 3 × 30'] },
+  ]},
+  { day: 7, week: 1, title: 'Rest Day', type: 'rest', blocks: [
+    { label: 'Full rest', items: ['Prioritize sleep (7–9 hrs)', 'Hydrate', 'Light walking if desired'] },
+  ]},
+
+  { day: 8, week: 2, title: 'Push Power', type: 'strength', blocks: [
+    { label: 'Warm-up', items: ['Jumping jacks — 2 min', 'Scapular push-ups — 12', 'Arm circles — 1 min'] },
+    { label: 'Main (4 rounds, 60s rest)', items: ['Push-ups — 15', 'Decline push-ups — 10', 'Pike push-ups — 10', 'Tricep dips — 12', 'Hollow hold — 45s'] },
+    { label: 'Finisher', items: ['Push-up density test — max reps in 2 min'] },
+  ]},
+  { day: 9, week: 2, title: 'HIIT Intervals', type: 'conditioning', blocks: [
+    { label: 'Warm-up', items: ['High knees — 1 min', 'Inchworms — 8'] },
+    { label: '30s on / 30s off ×10 rounds', items: ['Burpees', 'Jump squats', 'Push-up to shoulder tap', 'Skaters', 'Repeat once more through'] },
+    { label: 'Cool-down', items: ['Slow walk — 3 min', 'Hamstring stretch — 1 min'] },
+  ]},
+  { day: 10, week: 2, title: 'Mobility & Core', type: 'rest', blocks: [
+    { label: 'Core circuit (3 rounds)', items: ['Dead bug — 10/side', 'Bird dog — 10/side', 'Side plank — 30s/side', 'Hollow rocks — 20'] },
+    { label: 'Mobility', items: ['Full yoga flow — 10 min', 'Hip & hamstring stretching — 5 min'] },
+  ]},
+  { day: 11, week: 2, title: 'Legs Volume', type: 'strength', blocks: [
+    { label: 'Warm-up', items: ['Bodyweight squats — 20', 'Single-leg glute bridge — 15/side', 'Reverse lunges — 10/side'] },
+    { label: 'Main (4 rounds)', items: ['Jump squats — 12', 'Bulgarian split squats — 10/side', 'Cossack squats — 8/side', 'Single-leg RDL — 10/side', 'Wall sit — 60s'] },
+    { label: 'Finisher', items: ['100 squats for time'] },
+  ]},
+  { day: 12, week: 2, title: 'Density Day', type: 'conditioning', blocks: [
+    { label: 'Warm-up', items: ['Dynamic flow — 3 min'] },
+    { label: 'AMRAP 25 min', items: ['Push-ups — 10', 'Bodyweight squats — 15', 'Mountain climbers — 20', 'Burpees — 5', 'Track rounds completed'] },
+    { label: 'Cool-down', items: ['Walk + stretch — 5 min'] },
+  ]},
+  { day: 13, week: 2, title: 'Pull & Core', type: 'strength', blocks: [
+    { label: 'Warm-up', items: ['Scapular push-ups — 15', 'Thoracic rotations — 10/side'] },
+    { label: 'Main (4 rounds)', items: ['Superman hold — 30s', 'Reverse snow angels — 15', 'Towel rows — 12', 'Hollow hold — 45s', 'V-ups — 15'] },
+    { label: 'Finisher', items: ['Plank — max hold, then 2× 45s'] },
+  ]},
+  { day: 14, week: 2, title: 'Rest Day', type: 'rest', blocks: [
+    { label: 'Full rest', items: ['Sleep focus', 'Light walk 20–30 min optional', 'Stretch 10 min'] },
+  ]},
+
+  { day: 15, week: 3, title: 'Push Progression', type: 'strength', blocks: [
+    { label: 'Warm-up', items: ['Jumping jacks — 2 min', 'Scapular push-ups — 12'] },
+    { label: 'Main (5 rounds, 75s rest)', items: ['Archer push-ups — 6/side', 'Decline push-ups — 12', 'Pike push-ups — 12', 'Diamond push-ups — 10', 'L-sit tuck hold — 20s'] },
+    { label: 'Finisher', items: ['Push-up ladder: 10-9-8...1 (no rest)'] },
+  ]},
+  { day: 16, week: 3, title: 'Conditioning Gauntlet', type: 'conditioning', blocks: [
+    { label: 'Warm-up', items: ['Inchworms — 8', 'High knees — 1 min'] },
+    { label: '4 rounds — 45s on / 15s off', items: ['Burpees', 'Jump lunges', 'Push-up to T', 'Plank', 'Jump squats', 'Rest 1 min between rounds'] },
+    { label: 'Cool-down', items: ['Stretch — 5 min'] },
+  ]},
+  { day: 17, week: 3, title: 'Mobility & Core', type: 'rest', blocks: [
+    { label: 'Core (3 rounds)', items: ['Hollow rocks — 25', 'V-ups — 15', 'Russian twists — 20/side', 'Side plank — 30s/side'] },
+    { label: 'Mobility', items: ['Yoga flow — 15 min'] },
+  ]},
+  { day: 18, week: 3, title: 'Leg Power', type: 'strength', blocks: [
+    { label: 'Warm-up', items: ['Bodyweight squats — 20', 'Reverse lunges — 10/side'] },
+    { label: 'Main (5 rounds)', items: ['Pistol squats — 5/side (progression ok)', 'Jump squats — 15', 'Bulgarian split squats — 12/side', 'Nordic curl negatives — 5', 'Wall sit — 75s'] },
+    { label: 'Finisher', items: ['Jump squats — tabata 20s on / 10s off × 8'] },
+  ]},
+  { day: 19, week: 3, title: 'Long HIIT', type: 'conditioning', blocks: [
+    { label: 'Warm-up', items: ['Inchworms — 8', 'High knees — 1 min'] },
+    { label: 'EMOM 30 min', items: ['Min 1: Burpees — 12', 'Min 2: Jump squats — 20', 'Min 3: Push-ups — 15', 'Min 4: Plank — 40s', 'Min 5: Mountain climbers — 30', 'Repeat ×6'] },
+    { label: 'Cool-down', items: ['Walk + stretch — 5 min'] },
+  ]},
+  { day: 20, week: 3, title: 'Pull & Core', type: 'strength', blocks: [
+    { label: 'Warm-up', items: ['Scapular push-ups — 15'] },
+    { label: 'Main (4 rounds)', items: ['Towel rows — 15', 'Superman hold — 45s', 'Reverse snow angels — 20', 'Hollow rocks — 25', 'V-ups — 20'] },
+    { label: 'Finisher', items: ['Plank 30s front / Side plank 30s left / Side plank 30s right × 3'] },
+  ]},
+  { day: 21, week: 3, title: 'Rest Day', type: 'rest', blocks: [
+    { label: 'Full rest', items: ['Sleep 8+ hrs', 'Hydrate aggressively', 'Light walk optional'] },
+  ]},
+
+  { day: 22, week: 4, title: 'Push Peak', type: 'strength', blocks: [
+    { label: 'Warm-up', items: ['Scapular push-ups — 12', 'Inchworms — 8'] },
+    { label: 'Main (5 rounds, 90s rest)', items: ['Archer push-ups — 8/side', 'Decline push-ups — 10', 'Pike push-ups — 15', 'Tricep dips — 15', 'Hollow hold — 60s'] },
+    { label: 'Finisher', items: ['Max push-ups in 3 min — log the score'] },
+  ]},
+  { day: 23, week: 4, title: 'Conditioning Peak', type: 'conditioning', blocks: [
+    { label: 'Warm-up', items: ['High knees — 1 min', 'Inchworms — 8'] },
+    { label: '5 rounds for time', items: ['Burpees — 15', 'Bodyweight squats — 25', 'Push-ups — 20', 'Mountain climbers — 30', 'Rest 60s between rounds — log total time'] },
+    { label: 'Cool-down', items: ['Walk — 5 min, stretch'] },
+  ]},
+  { day: 24, week: 4, title: 'Mobility & Core', type: 'rest', blocks: [
+    { label: 'Core (4 rounds)', items: ['Hollow rocks — 30', 'V-ups — 20', 'Side plank — 40s/side', 'Bicycle crunches — 30'] },
+    { label: 'Mobility', items: ['Deep stretch session — 15 min'] },
+  ]},
+  { day: 25, week: 4, title: 'Leg Peak', type: 'strength', blocks: [
+    { label: 'Warm-up', items: ['Bodyweight squats — 25', 'Reverse lunges — 12/side'] },
+    { label: 'Main (5 rounds)', items: ['Pistol squats — 6/side (or progression)', 'Jump squats — 20', 'Cossack squats — 10/side', 'Single-leg glute bridge — 15/side', 'Wall sit — 90s'] },
+    { label: 'Finisher', items: ['150 squats for time'] },
+  ]},
+  { day: 26, week: 4, title: 'Final HIIT Blitz', type: 'conditioning', blocks: [
+    { label: 'Warm-up', items: ['Inchworms — 8', 'High knees — 1 min'] },
+    { label: 'Tabata ×5 — 20s on / 10s off, 8 rounds each', items: ['Burpees', 'Jump squats', 'Push-ups', 'Mountain climbers', 'Skaters', '1 min rest between blocks'] },
+    { label: 'Cool-down', items: ['Full stretch — 8 min'] },
+  ]},
+  { day: 27, week: 4, title: 'Full Body Benchmark', type: 'strength', blocks: [
+    { label: 'Warm-up', items: ['Inchworms — 8', 'Scapular push-ups — 12'] },
+    { label: 'Benchmark test — log everything', items: ['Push-ups — max unbroken', 'Bodyweight squats — max in 2 min', 'Plank — max hold', 'Burpees — max in 3 min', 'Rest as needed between tests'] },
+    { label: 'Cool-down', items: ['Stretch — 10 min'] },
+  ]},
+  { day: 28, week: 4, title: 'Victory Rest', type: 'rest', blocks: [
+    { label: 'Complete', items: ['Reflect on progress', 'Compare Day 1 vs Day 27 numbers', 'Plan next block'] },
+  ]},
+];
+
+const TYPE_CONFIG = {
+  strength:     { label: 'STRENGTH',     icon: '⚡', color: '#ff4d00' },
+  conditioning: { label: 'CONDITIONING', icon: '🔥', color: '#e63946' },
+  rest:         { label: 'RECOVERY',     icon: '⏱',  color: '#4a7c59' },
+};
+
+// ═════════════════════════════════════════════════════════════
+// STATE + PERSISTENCE
+// ═════════════════════════════════════════════════════════════
+
+let state = { selectedDay: 1, completed: {} };
+try {
+  const saved = localStorage.getItem('calisthenics-completed');
+  if (saved) state.completed = JSON.parse(saved);
+} catch (e) { /* ignore */ }
+
+function saveCompleted() {
+  try { localStorage.setItem('calisthenics-completed', JSON.stringify(state.completed)); }
+  catch (e) { console.error(e); }
+}
+
+// ═════════════════════════════════════════════════════════════
+// HELPERS
+// ═════════════════════════════════════════════════════════════
+
+function escapeRegExp(s) { return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); }
+function escapeHtml(s) {
+  return s.replace(/[&<>"']/g, c => ({
+    '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+  }[c]));
+}
+
+function parseLine(line) {
+  const keys = Object.keys(EXERCISES).sort((a, b) => b.length - a.length);
+  for (const key of keys) {
+    const re = new RegExp('^' + escapeRegExp(key) + '\\b', 'i');
+    if (re.test(line)) {
+      return { name: key, rest: line.slice(key.length) };
+    }
+  }
+  return null;
+}
+
+// YouTube search that biases toward Calisthenic Movement (@calimove) videos
+// by prepending 'calimove' to the query. When Calimove has a video for the
+// exercise, it surfaces first; when they don't, YouTube falls back to other
+// high-quality calisthenics channels (School of Calisthenics, FitnessFAQs,
+// Saturno Movement, etc.) rather than returning nothing.
+//
+// This approach is used instead of the channel-handle search URL
+// (/@calimove/search?query=...) because that URL is unreliable — YouTube's
+// channel search UI often returns zero results even when matching videos
+// exist on the channel.
+const CHANNEL_BIAS = 'calimove';
+
+function buildYouTubeUrl(query) {
+  return 'https://www.youtube.com/results?search_query=' + encodeURIComponent(CHANNEL_BIAS + ' ' + query);
+}
+
+// ═════════════════════════════════════════════════════════════
+// RENDERING
+// ═════════════════════════════════════════════════════════════
+
+function renderDayGrid() {
+  const grid = document.getElementById('day-grid');
+  grid.innerHTML = '';
+  PROGRAM.forEach(d => {
+    const btn = document.createElement('button');
+    const active = state.selectedDay === d.day;
+    const done = state.completed[d.day];
+    btn.className = 'day-btn' + (active ? ' active' : '');
+    btn.innerHTML = `
+      <div>${d.day}</div>
+      <div class="day-btn-dot" style="background: ${TYPE_CONFIG[d.type].color};"></div>
+      ${done ? '<div class="day-btn-check">✓</div>' : ''}
+    `;
+    btn.addEventListener('click', () => selectDay(d.day));
+    grid.appendChild(btn);
+  });
+}
+
+function renderDay() {
+  const day = PROGRAM.find(d => d.day === state.selectedDay);
+  const cfg = TYPE_CONFIG[day.type];
+
+  const card = document.getElementById('day-card');
+  card.style.animation = 'none';
+  void card.offsetHeight;
+  card.style.animation = 'slideIn 0.4s ease-out';
+
+  document.getElementById('week-tag').textContent = `WEEK ${day.week}`;
+
+  const typeLabel = document.getElementById('day-type-label');
+  typeLabel.style.color = cfg.color;
+  typeLabel.innerHTML = `<span>${cfg.icon}</span> ${cfg.label}`;
+
+  document.getElementById('day-number').textContent = `DAY ${String(day.day).padStart(2, '0')}`;
+  document.getElementById('day-title').textContent = day.title;
+
+  const completeBtn = document.getElementById('complete-btn');
+  const done = state.completed[day.day];
+  completeBtn.className = 'complete-btn mono' + (done ? ' done' : '');
+  completeBtn.innerHTML = done ? '✓ DONE' : 'MARK COMPLETE';
+  completeBtn.onclick = () => toggleComplete(day.day);
+
+  const container = document.getElementById('blocks-container');
+  container.innerHTML = '';
+  day.blocks.forEach((block, i) => {
+    const blockDiv = document.createElement('div');
+    blockDiv.className = 'block';
+    const itemsHtml = block.items.map(item => {
+      const parsed = parseLine(item);
+      if (parsed) {
+        return `<li><span><button class="exercise-link" data-name="${escapeHtml(parsed.name)}" style="text-decoration-color: ${cfg.color};">${escapeHtml(parsed.name)}</button>${escapeHtml(parsed.rest)}</span></li>`;
+      } else {
+        return `<li><span>${escapeHtml(item)}</span></li>`;
+      }
+    }).join('');
+    blockDiv.innerHTML = `
+      <div class="block-header">
+        <span class="block-num" style="color: ${cfg.color};">${String(i + 1).padStart(2, '0')}</span>
+        <h3 class="block-label">${escapeHtml(block.label)}</h3>
+      </div>
+      <ul class="block-list">${itemsHtml}</ul>
+    `;
+    container.appendChild(blockDiv);
+  });
+
+  container.querySelectorAll('.exercise-link').forEach(link => {
+    link.addEventListener('click', () => openModal(link.dataset.name));
+  });
+
+  document.getElementById('prev-btn').disabled = (state.selectedDay === 1);
+  document.getElementById('next-btn').disabled = (state.selectedDay === 28);
+}
+
+function renderProgress() {
+  const count = Object.values(state.completed).filter(Boolean).length;
+  document.getElementById('done-count').textContent = count;
+  document.getElementById('progress-fill').style.width = ((count / 28) * 100) + '%';
+  document.getElementById('reset-btn').style.display = count > 0 ? 'inline-flex' : 'none';
+}
+
+function selectDay(day) {
+  state.selectedDay = day;
+  renderDayGrid();
+  renderDay();
+  if (window.innerWidth < 768) {
+    document.getElementById('day-card').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+}
+
+function toggleComplete(day) {
+  state.completed[day] = !state.completed[day];
+  saveCompleted();
+  renderDayGrid();
+  renderDay();
+  renderProgress();
+}
+
+function resetProgress() {
+  if (!confirm('Reset all progress?')) return;
+  state.completed = {};
+  saveCompleted();
+  renderDayGrid();
+  renderDay();
+  renderProgress();
+}
+
+// ═════════════════════════════════════════════════════════════
+// MODAL
+// ═════════════════════════════════════════════════════════════
+
+function openModal(name) {
+  const exercise = EXERCISES[name];
+  if (!exercise) return;
+
+  document.getElementById('modal-title').textContent = name;
+  document.getElementById('modal-cue').textContent = exercise.cue;
+  document.getElementById('yt-btn').href = buildYouTubeUrl(exercise.query);
+
+  document.getElementById('modal').classList.remove('hidden');
+}
+
+function closeModal() {
+  document.getElementById('modal').classList.add('hidden');
+}
+
+// ═════════════════════════════════════════════════════════════
+// EVENT LISTENERS
+// ═════════════════════════════════════════════════════════════
+
+document.getElementById('prev-btn').addEventListener('click', () => {
+  if (state.selectedDay > 1) selectDay(state.selectedDay - 1);
+});
+document.getElementById('next-btn').addEventListener('click', () => {
+  if (state.selectedDay < 28) selectDay(state.selectedDay + 1);
+});
+document.getElementById('reset-btn').addEventListener('click', resetProgress);
+document.getElementById('modal-close').addEventListener('click', closeModal);
+document.getElementById('modal').addEventListener('click', (e) => {
+  if (e.target.id === 'modal') closeModal();
+});
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') closeModal();
+  else if (e.key === 'ArrowLeft' && state.selectedDay > 1) selectDay(state.selectedDay - 1);
+  else if (e.key === 'ArrowRight' && state.selectedDay < 28) selectDay(state.selectedDay + 1);
+});
+
+// ═════════════════════════════════════════════════════════════
+// INIT
+// ═════════════════════════════════════════════════════════════
+
+renderDayGrid();
+renderDay();
+renderProgress();
+</script>
+
+</body>
+</html>
