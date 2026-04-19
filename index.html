@@ -810,14 +810,16 @@ function parseLine(line) {
 // high-quality calisthenics channels (School of Calisthenics, FitnessFAQs,
 // Saturno Movement, etc.) rather than returning nothing.
 //
-// This approach is used instead of the channel-handle search URL
-// (/@calimove/search?query=...) because that URL is unreliable — YouTube's
-// channel search UI often returns zero results even when matching videos
-// exist on the channel.
+// Uses m.youtube.com (mobile web) instead of www.youtube.com because iOS
+// Universal Links aggressively hands www.youtube.com URLs off to the YouTube
+// app, which strips the search_query parameter during the handoff and
+// dumps the user on the home screen. m.youtube.com is not intercepted,
+// so the search runs correctly in Safari/in-app browsers. Desktop works fine
+// either way.
 const CHANNEL_BIAS = 'calimove';
 
 function buildYouTubeUrl(query) {
-  return 'https://www.youtube.com/results?search_query=' + encodeURIComponent(CHANNEL_BIAS + ' ' + query);
+  return 'https://m.youtube.com/results?search_query=' + encodeURIComponent(CHANNEL_BIAS + ' ' + query);
 }
 
 // ═════════════════════════════════════════════════════════════

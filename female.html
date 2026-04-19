@@ -564,7 +564,7 @@
         <span class="yt-btn-icon"></span>
         <span>WATCH ON LEAP FITNESS</span>
       </a>
-      <div class="yt-btn-hint">Opens search on Leap Fitness YouTube channel</div>
+      <div class="yt-btn-hint">Opens YouTube search, Leap Fitness videos first</div>
     </div>
   </div>
 </div>
@@ -829,12 +829,22 @@ function parseLine(line) {
   return null;
 }
 
-// Channel-scoped search — restricts results to Leap Fitness videos only.
-// Format: https://www.youtube.com/@HANDLE/search?query=TERM
-const CHANNEL_HANDLE = 'LeapFitnessOfficial';
+// YouTube search that biases toward Leap Fitness (@LeapFitnessOfficial)
+// videos by prepending 'leap fitness' to the query. When Leap Fitness has a
+// video for the exercise, it surfaces first; when they don't, YouTube falls
+// back to other quality beginner/women's fitness channels rather than
+// returning nothing.
+//
+// Uses m.youtube.com (mobile web) instead of www.youtube.com because iOS
+// Universal Links aggressively hands www.youtube.com URLs off to the YouTube
+// app, which strips the search_query parameter during the handoff and
+// dumps the user on the home screen. m.youtube.com is not intercepted,
+// so the search runs correctly in Safari/in-app browsers. Desktop works fine
+// either way.
+const CHANNEL_BIAS = 'leap fitness';
 
 function buildYouTubeUrl(query) {
-  return 'https://www.youtube.com/@' + CHANNEL_HANDLE + '/search?query=' + encodeURIComponent(query);
+  return 'https://m.youtube.com/results?search_query=' + encodeURIComponent(CHANNEL_BIAS + ' ' + query);
 }
 
 // ═════════════════════════════════════════════════════════════
