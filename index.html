@@ -810,16 +810,23 @@ function parseLine(line) {
 // high-quality calisthenics channels (School of Calisthenics, FitnessFAQs,
 // Saturno Movement, etc.) rather than returning nothing.
 //
-// Uses m.youtube.com (mobile web) instead of www.youtube.com because iOS
-// Universal Links aggressively hands www.youtube.com URLs off to the YouTube
-// app, which strips the search_query parameter during the handoff and
-// dumps the user on the home screen. m.youtube.com is not intercepted,
-// so the search runs correctly in Safari/in-app browsers. Desktop works fine
-// either way.
+// Platform-aware URL construction:
+// - On iOS, uses the youtube:// URL scheme which forces the YouTube app
+//   to open with the search query intact. Plain https://www.youtube.com/...
+//   links get intercepted by iOS Universal Links and the app drops the
+//   search_query param, dumping users on the home screen.
+// - On everything else (desktop, Android), uses the standard HTTPS URL
+//   which opens in the default browser (or app, on Android) correctly.
 const CHANNEL_BIAS = 'calimove';
 
+const IS_IOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+
 function buildYouTubeUrl(query) {
-  return 'https://m.youtube.com/results?search_query=' + encodeURIComponent(CHANNEL_BIAS + ' ' + query);
+  const q = encodeURIComponent(CHANNEL_BIAS + ' ' + query);
+  if (IS_IOS) {
+    return 'youtube://www.youtube.com/results?search_query=' + q;
+  }
+  return 'https://www.youtube.com/results?search_query=' + q;
 }
 
 // ═════════════════════════════════════════════════════════════
